@@ -1,11 +1,12 @@
 #include<bits/stdc++.h>
 using namespace std;
 int infinite = INT_MAX;
-int min=INT_MAX;
-int minCost=0;
+int minCost=0;//minimum of all paths
 int visited[10]={0};
-int initReductionCost=0;
-int parentCost=0;
+int initReductionCost=0;//r cap
+int count=0;//flag
+int countInfinite=0;//to check if entire row or column is infinite
+int parentCost=0;//previous parent cost
 int city[10][10] = {
     {infinite, 5, 2, 7, 3, 8, 1, 5, 7, 3},
     {5, infinite, 4, 8, 11, 2, 9, 5, 1, 6},
@@ -35,13 +36,22 @@ void findInitCost()
 {
     for(int i=0;i<10;i++)
     {
+        countInfinite=0;
         int min=10000;
         for(int j=0;j<10;j++)
         {
-            if(city[i][j]<min&&city[i][j]!=infinite)
+            if(city[i][j]>=infinite-10)
+            {
+                countInfinite++;
+            }
+            if(city[i][j]<min&&!(city[i][j]>=infinite-10))
             {
                 min=city[i][j];
             }
+        }
+        if(countInfinite==10)
+        {
+            min=0;
         }
         for(int j=0;j<10;j++)
         {
@@ -51,13 +61,18 @@ void findInitCost()
     }
     for(int i=0;i<10;i++)
     {
+        countInfinite=0;
         int min=10000;
         for(int j=0;j<10;j++)
         {
-            if(city[j][i]<min&&city[j][i]!=infinite)
+            if(city[j][i]<min&&!(city[j][i]>=infinite-10))
             {
                 min=city[j][i];
             }
+        }
+        if (countInfinite == 10)
+        {
+            min = 0;
         }
         for(int j=0;j<10;j++)
         {
@@ -67,14 +82,23 @@ void findInitCost()
     }
     parentCost=parentCost+initReductionCost;
 }
-void initialize()
+void initializeComp1()
 {
     for(int i=0;i<10;i++)
     {
         for(int j=0;j<10;j++)
         {
             comp1[i][j]=0;
-            comp2[i][j]=0;
+        }
+    }
+}
+void initializeComp2()
+{
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            comp2[i][j] = 0;
         }
     }
 }
@@ -124,9 +148,9 @@ int main(int argc, char const *argv[])
     if(choice==1)//TSP
     {
         cout<<"The fuel efficient path will be: "<<endl;
-        initialize();
+        initializeComp1();
+        initializeComp2();
         findInitCost();
-        display();
         findPath(0);
     }
     else if(choice==2)//Flloyd Warshall

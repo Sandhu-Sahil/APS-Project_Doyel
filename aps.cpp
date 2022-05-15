@@ -24,18 +24,21 @@ int city[N][N] = {
     {1, 9, infinite, 6, 1, 9, infinite, 3, 1, 2},
     {5, 5, 2, 7, 3, 6, 3, infinite, 5, 4},
     {7, 1, 6, infinite, 2, 4, 1, 5, infinite, 9},
-    {3, 6, infinite, 3, 9, 5, 2, 4, 9, infinite}
-    };
+    {3, 6, infinite, 3, 9, 5, 2, 4, 9, infinite}};
 int comp1[N][N],comp2[N][N];
-void display()
+void display(int matrix[N][N])
 {
+    cout<<endl;
     for(int i=0;i<N;i++)
     {
         for(int j=0;j<N;j++)
         {
-            cout<<comp1[i][j]<<" \t";
+            if(matrix[i][j]!=infinite)
+            cout<<matrix[i][j]<<"\t";
+            else
+            cout<<"X\t";
         }
-        cout<<endl;
+        cout<<endl<<endl;
     }
     cout<<"Initial reduction Cost = "<<initReductionCost<<endl;
 }
@@ -75,8 +78,10 @@ void findInitCost()//For initial reduction
         }
         initReductionCost=initReductionCost+mini;
     }
-    parentCost=initReductionCost;
-    totalCost=totalCost+parentCost;
+    cout<<endl;
+    display(city);
+    cout<<endl;
+    totalCost=parentCost=initReductionCost;
     cout<<endl<<"Initial Reduction:"<<initReductionCost<<endl;
     cout<<"Parent Cost:"<<parentCost<<endl;
     cout<<"Total Cost:"<<totalCost<<endl;
@@ -94,11 +99,14 @@ int ReductionMatrix1()
                 mini=comp1[i][j];
             }
         }
-        for(int j=0;j<N;j++)
+        if(mini!=infinite)
         {
-            if(comp1[i][j]!=infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp1[i][j]=comp1[i][j]-mini;
+                if (comp1[i][j] != infinite)
+                {
+                    comp1[i][j] = comp1[i][j] - mini;
+                }
             }
         }
         if(mini==infinite)
@@ -117,11 +125,14 @@ int ReductionMatrix1()
                 mini=comp1[j][i];
             }
         }
-        for(int j=0;j<N;j++)
+        if(mini!=infinite)
         {
-            if(comp1[j][i]!=infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp1[j][i]=comp1[j][i]-mini;
+                if (comp1[j][i] != infinite)
+                {
+                    comp1[j][i] = comp1[j][i] - mini;
+                }
             }
         }
         if (mini==infinite)
@@ -146,10 +157,13 @@ int ReductionMatrix2()
                 mini=comp2[i][j];
             }
         }
-        for(int j=0;j<N;j++)
+        if(mini!=infinite)
         {
-            if(comp2[i][j]!=infinite)
-            comp2[i][j]=comp2[i][j]-mini;
+            for (int j = 0; j < N; j++)
+            {
+                if (comp2[i][j] != infinite)
+                    comp2[i][j] = comp2[i][j] - mini;
+            }
         }
         if(mini==infinite)
         {
@@ -167,11 +181,14 @@ int ReductionMatrix2()
                 mini=comp2[j][i];
             }
         }
-        for(int j=0;j<N;j++)
+        if(mini!=infinite)
         {
-            if(comp2[j][i]!=infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp2[j][i]=comp2[j][i]-mini;
+                if (comp2[j][i] != infinite)
+                {
+                    comp2[j][i] = comp2[j][i] - mini;
+                }
             }
         }
         if (mini==infinite)
@@ -183,23 +200,13 @@ int ReductionMatrix2()
     parentCost2=parentCost+reductionCost2;
     return parentCost2;
 }
-void initializeComp1()
+void initialize(int comp[N][N])
 {
     for(int i=0;i<N;i++)
     {
         for(int j=0;j<N;j++)
         {
-            comp1[i][j]=0;
-        }
-    }
-}
-void initializeComp2()
-{
-    for(int i=0;i<N;i++)
-    {
-        for(int j=0;j<N;j++)
-        {
-            comp2[i][j]=0;
+            comp[i][j]=0;
         }
     }
 }
@@ -247,23 +254,13 @@ void copy2(int cno,int ncno)
     cost2cost=ReductionMatrix2();
     cost2cost=parentCost2+city[cno][ncno];
 }
-void copyCity1()
+void copy(int matrix[N][N])
 {
     for(int i=0;i<N;i++)
     {
         for(int j=0;j<N;j++)
         {
-            city[i][j]=comp1[i][j];
-        }
-    }
-}
-void copyCity2()
-{
-    for(int i=0;i<N;i++)
-    {
-        for(int j=0;j<N;j++)
-        {
-            city[i][j]=comp2[i][j];
+            city[i][j]=matrix[i][j];
         }
     }
 }
@@ -291,32 +288,37 @@ void findPath(int cno)
             }
             if(cost1cost<cost2cost)
             {
-                initializeComp2();
-
+                initialize(comp2);
             }
             else
             {
-                initializeComp1();
+                initialize(comp1);
             }
         }
     }
-    parentCost=min(cost1cost,cost2cost);
-    //cout<<endl<<"Parent Cost = "<<parentCost<<endl;
-    totalCost=totalCost+parentCost;
+    cout<<"total cost = "<<totalCost<<endl;
+    if(cost1cost>=0&&cost2cost>=0)
+    {
+        parentCost = min(cost1cost, cost2cost);
+    }
+    else{
+        parentCost = max(cost1cost, cost2cost);
+    }
     if(cost1cost<cost2cost)
     {
-        copyCity1();
-        initializeComp1();
-        initializeComp2();
+        copy(comp1);
+        initialize(comp1);
+        initialize(comp2);
     }
     else
     {
-        copyCity2();
-        initializeComp1();
-        initializeComp2();
+        copy(comp2);
+        initialize(comp1);
+        initialize(comp2);
     }
-    if(chk!=10)
-    {
+    if(chk!=N)
+    {display(city);
+        totalCost = totalCost + parentCost;
         cout<<"-->";
         if (cost1cost<cost2cost)
         {
@@ -339,9 +341,12 @@ int main(int argc, char const *argv[])
     cin>>choice;
     if(choice==1)//TSP
     {
+        cout<<endl;
+        display(city);
+        cout<<endl;
         cout<<"The fuel efficient path will be: "<<endl;
-        initializeComp1();
-        initializeComp2();
+        initialize(comp1);
+        initialize(comp2);
         findInitCost();
         findPath(0);
         cout<<endl<<"The total cost for this path =  "<<totalCost<<endl;
@@ -357,8 +362,20 @@ int main(int argc, char const *argv[])
     }
     else
     {
-        cout<<"Invalid Choice:";
+        cout<<"Invalid Choice";
     }
     cin>>choice;
     return 0;
 }
+/*
+    
+
+
+
+     {
+    {infinite, 20, 30, 10, 11},
+    {15, infinite, 16, 4, 2},
+    {3, 5, infinite, 2, 4},
+    {19, 6, 18, infinite, 3},
+    {16, 4, 7, 16, infinite}};
+    */

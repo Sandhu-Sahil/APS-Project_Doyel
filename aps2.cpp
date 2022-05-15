@@ -26,13 +26,13 @@ int city[N][N] = {
     {7, 1, 6, infinite, 2, 4, 1, 5, infinite, 9},
     {3, 6, infinite, 3, 9, 5, 2, 4, 9, infinite}};
 int comp1[N][N], comp2[N][N];
-void display()
+void display(int matrix[N][N])
 {
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            cout << comp1[i][j] << " \t";
+            cout << matrix[i][j] << " \t";
         }
         cout << endl;
     }
@@ -74,8 +74,7 @@ void findInitCost() // For initial reduction
         }
         initReductionCost = initReductionCost + mini;
     }
-    parentCost = initReductionCost;
-    totalCost = totalCost + parentCost;
+    totalCost = parentCost = initReductionCost;
     cout << endl
          << "Initial Reduction:" << initReductionCost << endl;
     cout << "Parent Cost:" << parentCost << endl;
@@ -183,23 +182,13 @@ int ReductionMatrix2()
     parentCost2 = parentCost + reductionCost2;
     return parentCost2;
 }
-void initializeComp1()
+void initialize(int comp[N][N])
 {
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            comp1[i][j] = 0;
-        }
-    }
-}
-void initializeComp2()
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            comp2[i][j] = 0;
+            comp[i][j] = 0;
         }
     }
 }
@@ -247,23 +236,13 @@ void copy2(int cno, int ncno)
     cost2cost = ReductionMatrix2();
     cost2cost = parentCost2 + city[cno][ncno];
 }
-void copyCity1()
+void copy(int matrix[N][N])
 {
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            city[i][j] = comp1[i][j];
-        }
-    }
-}
-void copyCity2()
-{
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < N; j++)
-        {
-            city[i][j] = comp2[i][j];
+            city[i][j] = matrix[i][j];
         }
     }
 }
@@ -291,11 +270,11 @@ void findPath(int cno)
             }
             if (cost1cost < cost2cost)
             {
-                initializeComp2();
+                initialize(comp2);
             }
             else
             {
-                initializeComp1();
+                initialize(comp1);
             }
         }
     }
@@ -304,15 +283,15 @@ void findPath(int cno)
     totalCost = totalCost + parentCost;
     if (cost1cost < cost2cost)
     {
-        copyCity1();
-        initializeComp1();
-        initializeComp2();
+        copy(comp1);
+        initialize(comp1);
+        initialize(comp2);
     }
     else
     {
-        copyCity2();
-        initializeComp1();
-        initializeComp2();
+        copy(comp2);
+        initialize(comp1);
+        initialize(comp2);
     }
     if (chk != 10)
     {
@@ -343,8 +322,8 @@ int main(int argc, char const *argv[])
     if (choice == 1) // TSP
     {
         cout << "The fuel efficient path will be: " << endl;
-        initializeComp1();
-        initializeComp2();
+        initialize(comp1);
+        initialize(comp2);
         findInitCost();
         findPath(0);
         cout << endl

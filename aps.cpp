@@ -6,14 +6,14 @@ int mini=infinite;
 int chk=0;
 int visited[N]={0};
 int initReductionCost=0;//r cap
-int reductionCost1=0;
-int reductionCost2=0;//r1 cap
+int reductionCost1=0;//r1 cap
+int reductionCost2=0;//r2 cap
 int parentCost=0;//previous parent cost
-int parentCost1=0;
-int parentCost2=0;
-int totalCost=0;
-int cost1cost=infinite;
-int cost2cost=infinite;
+int parentCost1=0;//comp1 costing
+int parentCost2=0;//comp2 costing
+int totalCost=0;//final cost
+string path;//path
+int comp1Cost,comp2Cost;
 int city[N][N] = {
     {infinite, 5, 2, 7, 3, 8, 1, 5, 7, 3},
     {5, infinite, 4, 8, 11, 2, 9, 5, 1, 6},
@@ -24,7 +24,8 @@ int city[N][N] = {
     {1, 9, infinite, 6, 1, 9, infinite, 3, 1, 2},
     {5, 5, 2, 7, 3, 6, 3, infinite, 5, 4},
     {7, 1, 6, infinite, 2, 4, 1, 5, infinite, 9},
-    {3, 6, infinite, 3, 9, 5, 2, 4, 9, infinite}};
+    {3, 6, infinite, 3, 9, 5, 2, 4, 9, infinite}
+    };
 int comp1[N][N],comp2[N][N];
 void display(int matrix[N][N])
 {
@@ -40,7 +41,6 @@ void display(int matrix[N][N])
         }
         cout<<endl<<endl;
     }
-    cout<<"Initial reduction Cost = "<<initReductionCost<<endl;
 }
 void findInitCost()//For initial reduction
 {
@@ -82,9 +82,6 @@ void findInitCost()//For initial reduction
     display(city);
     cout<<endl;
     totalCost=parentCost=initReductionCost;
-    cout<<endl<<"Initial Reduction:"<<initReductionCost<<endl;
-    cout<<"Parent Cost:"<<parentCost<<endl;
-    cout<<"Total Cost:"<<totalCost<<endl;
 }
 int ReductionMatrix1()
 {
@@ -229,8 +226,8 @@ void copy1(int cno,int ncno)
             }
         }
     }
-    cost1cost=ReductionMatrix1();
-    cost1cost=cost1cost+city[cno][ncno];
+    comp1Cost=ReductionMatrix1();
+    comp1Cost=comp1Cost+city[cno][ncno];
 }
 void copy2(int cno,int ncno)
 {
@@ -251,8 +248,8 @@ void copy2(int cno,int ncno)
             }
         }
     }
-    cost2cost=ReductionMatrix2();
-    cost2cost=parentCost2+city[cno][ncno];
+    comp2Cost=ReductionMatrix2();
+    comp2Cost=parentCost2+city[cno][ncno];
 }
 void copy(int matrix[N][N])
 {
@@ -266,17 +263,17 @@ void copy(int matrix[N][N])
 }
 void findPath(int cno)
 {
-    cost1cost=infinite;
-    cost2cost=infinite;
+    comp1Cost=infinite;
+    comp2Cost=infinite;
     chk++;
-    cout<<cno+1;
+    path=path+to_string(cno+1);
     visited[cno]=1;
     int i1,i2;
     for(int i=1;i<N;i++)
     {
         if(visited[i]==0)
         {
-            if(cost1cost>cost2cost)
+            if(comp1Cost>comp2Cost)
             {
                 copy1(cno,i);
                 i1=i;
@@ -286,7 +283,7 @@ void findPath(int cno)
                 copy2(cno,i);
                 i2=i;
             }
-            if(cost1cost<cost2cost)
+            if(comp1Cost<comp2Cost)
             {
                 initialize(comp2);
             }
@@ -296,15 +293,14 @@ void findPath(int cno)
             }
         }
     }
-    cout<<"total cost = "<<totalCost<<endl;
-    if(cost1cost>=0&&cost2cost>=0)
+    if(comp1Cost>=0&&comp2Cost>=0)
     {
-        parentCost = min(cost1cost, cost2cost);
+        parentCost = min(comp1Cost, comp2Cost);
     }
     else{
-        parentCost = max(cost1cost, cost2cost);
+        parentCost = max(comp1Cost, comp2Cost);
     }
-    if(cost1cost<cost2cost)
+    if(comp1Cost<comp2Cost)
     {
         copy(comp1);
         initialize(comp1);
@@ -316,16 +312,21 @@ void findPath(int cno)
         initialize(comp1);
         initialize(comp2);
     }
+    
     if(chk!=N)
-    {display(city);
+    {
+        display(city);
+        cout << "Total Cost = " << totalCost << endl;
         totalCost = totalCost + parentCost;
-        cout<<"-->";
-        if (cost1cost<cost2cost)
+        path=path+"-->";
+        if (comp1Cost<comp2Cost)
         {
+            cout<<endl<<"The next selected city : "<<i1+1<<endl;
             findPath(i1);
         }
         else
         {
+            cout << endl << "The next selected city : " << i2 + 1 << endl;
             findPath(i2);
         }
     }
@@ -341,15 +342,17 @@ int main(int argc, char const *argv[])
     cin>>choice;
     if(choice==1)//TSP
     {
-        cout<<endl;
+        cout<<endl<<"The input distance matrix:"<<endl;
         display(city);
-        cout<<endl;
-        cout<<"The fuel efficient path will be: "<<endl;
+        cout<<endl<<"The initially reduced distance matrix:"<<endl;
+        cout<<endl<<"The starting city will be : "<<1<<endl;
         initialize(comp1);
         initialize(comp2);
         findInitCost();
+        cout<<endl<<"The path to be followed"<<endl;
         findPath(0);
         cout<<endl<<"The total cost for this path =  "<<totalCost<<endl;
+        cout << endl << "The The fuel efficient path will be:  =  " << path << endl;
     }
     else if(choice==2)//Flloyd Warshall
     {
@@ -368,8 +371,9 @@ int main(int argc, char const *argv[])
     return 0;
 }
 /*
-    
 
+
+    
 
 
      {

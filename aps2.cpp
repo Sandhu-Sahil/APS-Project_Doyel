@@ -13,7 +13,7 @@ int parentCost1 = 0;
 int parentCost2 = 0;
 int totalCost = 0;
 int cost1cost = infinite;
-int cost2cost = infinite;
+int comp2Cost = infinite;
 int city[N][N] = {
     {infinite, 5, 2, 7, 3, 8, 1, 5, 7, 3},
     {5, infinite, 4, 8, 11, 2, 9, 5, 1, 6},
@@ -28,13 +28,18 @@ int city[N][N] = {
 int comp1[N][N], comp2[N][N];
 void display(int matrix[N][N])
 {
+    cout << endl;
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
         {
-            cout << matrix[i][j] << " \t";
+            if (matrix[i][j] != infinite)
+                cout << matrix[i][j] << "\t";
+            else
+                cout << "X\t";
         }
-        cout << endl;
+        cout << endl
+             << endl;
     }
     cout << "Initial reduction Cost = " << initReductionCost << endl;
 }
@@ -74,6 +79,9 @@ void findInitCost() // For initial reduction
         }
         initReductionCost = initReductionCost + mini;
     }
+    cout << endl;
+    display(city);
+    cout << endl;
     totalCost = parentCost = initReductionCost;
     cout << endl
          << "Initial Reduction:" << initReductionCost << endl;
@@ -93,11 +101,14 @@ int ReductionMatrix1()
                 mini = comp1[i][j];
             }
         }
-        for (int j = 0; j < N; j++)
+        if (mini != infinite)
         {
-            if (comp1[i][j] != infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp1[i][j] = comp1[i][j] - mini;
+                if (comp1[i][j] != infinite)
+                {
+                    comp1[i][j] = comp1[i][j] - mini;
+                }
             }
         }
         if (mini == infinite)
@@ -116,11 +127,14 @@ int ReductionMatrix1()
                 mini = comp1[j][i];
             }
         }
-        for (int j = 0; j < N; j++)
+        if (mini != infinite)
         {
-            if (comp1[j][i] != infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp1[j][i] = comp1[j][i] - mini;
+                if (comp1[j][i] != infinite)
+                {
+                    comp1[j][i] = comp1[j][i] - mini;
+                }
             }
         }
         if (mini == infinite)
@@ -145,10 +159,13 @@ int ReductionMatrix2()
                 mini = comp2[i][j];
             }
         }
-        for (int j = 0; j < N; j++)
+        if (mini != infinite)
         {
-            if (comp2[i][j] != infinite)
-                comp2[i][j] = comp2[i][j] - mini;
+            for (int j = 0; j < N; j++)
+            {
+                if (comp2[i][j] != infinite)
+                    comp2[i][j] = comp2[i][j] - mini;
+            }
         }
         if (mini == infinite)
         {
@@ -166,11 +183,14 @@ int ReductionMatrix2()
                 mini = comp2[j][i];
             }
         }
-        for (int j = 0; j < N; j++)
+        if (mini != infinite)
         {
-            if (comp2[j][i] != infinite)
+            for (int j = 0; j < N; j++)
             {
-                comp2[j][i] = comp2[j][i] - mini;
+                if (comp2[j][i] != infinite)
+                {
+                    comp2[j][i] = comp2[j][i] - mini;
+                }
             }
         }
         if (mini == infinite)
@@ -233,8 +253,8 @@ void copy2(int cno, int ncno)
             }
         }
     }
-    cost2cost = ReductionMatrix2();
-    cost2cost = parentCost2 + city[cno][ncno];
+    comp2Cost = ReductionMatrix2();
+    comp2Cost = parentCost2 + city[cno][ncno];
 }
 void copy(int matrix[N][N])
 {
@@ -249,7 +269,7 @@ void copy(int matrix[N][N])
 void findPath(int cno)
 {
     cost1cost = infinite;
-    cost2cost = infinite;
+    comp2Cost = infinite;
     chk++;
     cout << cno + 1;
     visited[cno] = 1;
@@ -258,7 +278,7 @@ void findPath(int cno)
     {
         if (visited[i] == 0)
         {
-            if (cost1cost > cost2cost)
+            if (cost1cost > comp2Cost)
             {
                 copy1(cno, i);
                 i1 = i;
@@ -268,7 +288,7 @@ void findPath(int cno)
                 copy2(cno, i);
                 i2 = i;
             }
-            if (cost1cost < cost2cost)
+            if (cost1cost < comp2Cost)
             {
                 initialize(comp2);
             }
@@ -278,10 +298,16 @@ void findPath(int cno)
             }
         }
     }
-    parentCost = min(cost1cost, cost2cost);
-    // cout<<endl<<"Parent Cost = "<<parentCost<<endl;
-    totalCost = totalCost + parentCost;
-    if (cost1cost < cost2cost)
+    cout << "total cost = " << totalCost << endl;
+    if (cost1cost >= 0 && comp2Cost >= 0)
+    {
+        parentCost = min(cost1cost, comp2Cost);
+    }
+    else
+    {
+        parentCost = max(cost1cost, comp2Cost);
+    }
+    if (cost1cost < comp2Cost)
     {
         copy(comp1);
         initialize(comp1);
@@ -293,10 +319,12 @@ void findPath(int cno)
         initialize(comp1);
         initialize(comp2);
     }
-    if (chk != 10)
+    if (chk != N)
     {
+        display(city);
+        totalCost = totalCost + parentCost;
         cout << "-->";
-        if (cost1cost < cost2cost)
+        if (cost1cost < comp2Cost)
         {
             findPath(i1);
         }
@@ -321,6 +349,9 @@ int main(int argc, char const *argv[])
     cin >> choice;
     if (choice == 1) // TSP
     {
+        cout << endl;
+        display(city);
+        cout << endl;
         cout << "The fuel efficient path will be: " << endl;
         initialize(comp1);
         initialize(comp2);
@@ -343,8 +374,20 @@ int main(int argc, char const *argv[])
     }
     else
     {
-        cout << "Invalid Choice:";
+        cout << "Invalid Choice";
     }
     cin >> choice;
     return 0;
 }
+/*
+
+
+
+
+     {
+    {infinite, 20, 30, 10, 11},
+    {15, infinite, 16, 4, 2},
+    {3, 5, infinite, 2, 4},
+    {19, 6, 18, infinite, 3},
+    {16, 4, 7, 16, infinite}};
+    */

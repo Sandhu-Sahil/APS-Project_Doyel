@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include<unistd.h>
 using namespace std;
 #define N 10
 int infinite = INT_MAX;
@@ -6,14 +7,14 @@ int mini = infinite;
 int chk = 0;
 int visited[N] = {0};
 int initReductionCost = 0; // r cap
-int reductionCost1 = 0;
-int reductionCost2 = 0; // r1 cap
-int parentCost = 0;     // previous parent cost
-int parentCost1 = 0;
-int parentCost2 = 0;
-int totalCost = 0;
-int cost1cost = infinite;
-int comp2Cost = infinite;
+int reductionCost1 = 0;    // r1 cap
+int reductionCost2 = 0;    // r2 cap
+int parentCost = 0;        // previous parent cost
+int parentCost1 = 0;       // comp1 costing
+int parentCost2 = 0;       // comp2 costing
+int totalCost = 0;         // final cost
+string path;               // path
+int comp1Cost, comp2Cost;
 int city[N][N] = {
     {infinite, 5, 2, 7, 3, 8, 1, 5, 7, 3},
     {5, infinite, 4, 8, 11, 2, 9, 5, 1, 6},
@@ -38,10 +39,8 @@ void display(int matrix[N][N])
             else
                 cout << "X\t";
         }
-        cout << endl
-             << endl;
+        cout << endl << endl;
     }
-    cout << "Initial reduction Cost = " << initReductionCost << endl;
 }
 void findInitCost() // For initial reduction
 {
@@ -83,10 +82,6 @@ void findInitCost() // For initial reduction
     display(city);
     cout << endl;
     totalCost = parentCost = initReductionCost;
-    cout << endl
-         << "Initial Reduction:" << initReductionCost << endl;
-    cout << "Parent Cost:" << parentCost << endl;
-    cout << "Total Cost:" << totalCost << endl;
 }
 int ReductionMatrix1()
 {
@@ -231,8 +226,8 @@ void copy1(int cno, int ncno)
             }
         }
     }
-    cost1cost = ReductionMatrix1();
-    cost1cost = cost1cost + city[cno][ncno];
+    comp1Cost = ReductionMatrix1();
+    comp1Cost = comp1Cost + city[cno][ncno];
 }
 void copy2(int cno, int ncno)
 {
@@ -268,17 +263,17 @@ void copy(int matrix[N][N])
 }
 void findPath(int cno)
 {
-    cost1cost = infinite;
+    comp1Cost = infinite;
     comp2Cost = infinite;
     chk++;
-    cout << cno + 1;
+    path = path + to_string(cno + 1);
     visited[cno] = 1;
     int i1, i2;
     for (int i = 1; i < N; i++)
     {
         if (visited[i] == 0)
         {
-            if (cost1cost > comp2Cost)
+            if (comp1Cost > comp2Cost)
             {
                 copy1(cno, i);
                 i1 = i;
@@ -288,7 +283,7 @@ void findPath(int cno)
                 copy2(cno, i);
                 i2 = i;
             }
-            if (cost1cost < comp2Cost)
+            if (comp1Cost < comp2Cost)
             {
                 initialize(comp2);
             }
@@ -298,16 +293,15 @@ void findPath(int cno)
             }
         }
     }
-    cout << "total cost = " << totalCost << endl;
-    if (cost1cost >= 0 && comp2Cost >= 0)
+    if (comp1Cost >= 0 && comp2Cost >= 0)
     {
-        parentCost = min(cost1cost, comp2Cost);
+        parentCost = min(comp1Cost, comp2Cost);
     }
     else
     {
-        parentCost = max(cost1cost, comp2Cost);
+        parentCost = max(comp1Cost, comp2Cost);
     }
-    if (cost1cost < comp2Cost)
+    if (comp1Cost < comp2Cost)
     {
         copy(comp1);
         initialize(comp1);
@@ -319,75 +313,45 @@ void findPath(int cno)
         initialize(comp1);
         initialize(comp2);
     }
+
     if (chk != N)
     {
+
         display(city);
+        cout << "Total Cost = " << totalCost << endl;
         totalCost = totalCost + parentCost;
-        cout << "-->";
-        if (cost1cost < comp2Cost)
+        path = path + "-->";
+        if (comp1Cost < comp2Cost)
         {
+            cout << endl << "The next selected city : " << i1 + 1 << endl;
             findPath(i1);
         }
         else
         {
+            cout << endl << "The next selected city : " << i2 + 1 << endl;
             findPath(i2);
         }
     }
 }
 int main(int argc, char const *argv[])
 {
-    int noOfCouriers[10];
-    int choice;
-    cout << endl
-         << "Select your preference:" << endl
-         << endl;
-    cout << "Press 1 for fuel efficient path:" << endl
-         << endl;
-    cout << "Press 2 for proirity based path:" << endl
-         << endl;
-    cout << "Enter choice:";
-    cin >> choice;
-    if (choice == 1) // TSP
-    {
-        cout << endl;
-        display(city);
-        cout << endl;
-        cout << "The fuel efficient path will be: " << endl;
-        initialize(comp1);
-        initialize(comp2);
-        findInitCost();
-        findPath(0);
-        cout << endl
-             << "The total cost for this path =  " << totalCost << endl;
-    }
-    else if (choice == 2) // Flloyd Warshall
-    {
-        cout << endl
-             << "Enter the number of couriers to be delivered in the following cities:" << endl
-             << endl;
-        for (int i = 0; i < N; i++)
-        {
-            cout << endl
-                 << "Enter number of couriers for city " << i + 1 << ":";
-            cin >> noOfCouriers[i];
-        }
-    }
-    else
-    {
-        cout << "Invalid Choice";
-    }
-    cin >> choice;
+    cout<<"\n\t\t\t\t Courier Delivery Service \n"<<endl;
+    cout<<"\t\t\t\t\tMembers :\n";
+    cout<<"\t\t\t\tDoyel Agrawal \t9920103038\n\t\t\t\tSwastik Singh \t9920103039\n";
+    cout<<"\t\t\t\tNamit Atreya \t9920103045\n\t\t\t\tAmvi Sinha \t9920103048\n\n";
+    cout<<"\t\t\t\t Press ENTER to continue";
+    getchar();
+    system("clear");
+    cout << endl << "\t\t\tThe input distance matrix:" << endl;
+    display(city);
+    cout << endl << "\t\t\tThe starting city will be : " << 1 << endl;
+    cout << endl << "The initially reduced distance matrix:" << endl;
+    initialize(comp1);
+    initialize(comp2);
+    findInitCost();
+    cout << endl << "\t\t\tCalculating the further efficient paths" << endl;
+    findPath(0);
+    cout << endl << "The total cost for this path =  " << totalCost << endl;
+    cout << endl << "The The fuel efficient path will be:  =  " << path << endl;
     return 0;
 }
-/*
-
-
-
-
-     {
-    {infinite, 20, 30, 10, 11},
-    {15, infinite, 16, 4, 2},
-    {3, 5, infinite, 2, 4},
-    {19, 6, 18, infinite, 3},
-    {16, 4, 7, 16, infinite}};
-    */

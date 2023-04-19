@@ -345,6 +345,34 @@ int main(int argc, char const *argv[])
     cout<<"\n\t\t\t\t\t\t\t\t Press ENTER to continue";
     getchar();
     system("clear");
+
+     vector<vector<int>> city(N, vector<int>(N));
+
+    // Get input from user
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << "Enter the distance between city " << i << " and city " << j << ": ";
+            cin >> city[i][j];
+            if (city[i][j] == -1) { // You can use a negative value to represent "infinite"
+                city[i][j] = numeric_limits<int>::max(); // Set to the maximum integer value
+            }
+        }
+    }
+
+    // Print the distance matrix
+    cout << "Distance Matrix:" << endl;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (city[i][j] != numeric_limits<int>::max()) {
+                cout << city[i][j] << "\t";
+            } else {
+                cout << "X\t";
+            }
+        }
+        cout << endl;
+    }
+
+
     cout << endl << "\t\t\tThe input distance matrix:" << endl;
     display(city);
     cout << endl << "\t\t\tThe starting city will be : " << 1 << endl;

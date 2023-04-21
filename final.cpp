@@ -17,6 +17,8 @@ int final_res = INF; // final result
 int dis[MAXN][MAXN]; // distance matrix
 int Next[MAXN][MAXN]; // next city matrix
 
+int flloyd_cost; // final result of flloyd warshell
+
 void print_matrix(vector<vector<int>> & adj) {
     cout << "Distance matrix:" << endl;
     for (int i = 0; i < N; ++i) {
@@ -219,10 +221,12 @@ vector<int> constructPath(int u, int v)
     if (Next[u][v] == -1){
         return {};
     }
- 
+
+    flloyd_cost = 0;
     // Storing the path in a vector
     vector<int> path = { u };
     while (u != v) {
+        flloyd_cost = flloyd_cost + dis[u][Next[u][v]];
         u = Next[u][v];
         path.push_back(u);
     }
@@ -250,9 +254,10 @@ void floydWarshall(int V)
 void printPath(vector<int>& path)
 {
     int n = path.size();
-    for (int i = 0; i < n - 1; i++)
-        cout << path[i] << " -> ";
-    cout << path[n - 1] << endl;
+    for (int i = 0; i < n - 1; i++){
+        cout << path[i] + 1 << " -> ";
+    }
+    cout << path[n - 1] + 1<< endl;
 }
 
 void floydWarshellStart(){
@@ -301,16 +306,27 @@ void floydWarshellStart(){
                 cout << endl <<"Enter the source vertex: ";
                 int u;
                 cin >> u;
+                u = u - 1;
+                if (u >= V){
+                    cout << "Invalid vertex"<<endl;
+                    break;
+                }
                 cout << "Enter the destination vertex: ";
                 int v;
                 cin >> v;
+                v = v - 1;
+                if (v >= V){
+                    cout << "Invalid vertex"<<endl;
+                    break;
+                }
                 path = constructPath(u, v);
                 if (path.size() == 0){
-                    cout << "No path exists between " << u << " and " << v << endl;
+                    cout << "No path exists between " << u+1 << " and " << v+1 << endl;
                 }
                 else{
-                    cout << "Shortest path between " << u << " and " << v << " is: ";
+                    cout << "Shortest path between " << u+1 << " and " << v+1 << " is: ";
                     printPath(path);
+                    cout << "Minimum cost of path " << u+1 << " to " << v+1 << " is: " << flloyd_cost << endl;
                 }
                 break;
             case 2:

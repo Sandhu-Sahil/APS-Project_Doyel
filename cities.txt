@@ -1,0 +1,15 @@
+0	Delhi
+1	Noida
+2	Ghaziabad
+3	Faridabad
+4	Gurgaon
+5	Greater Noida
+6	Meerut
+7	Panipat
+8	Aligarh
+9	Agra
+10	Chandigarh
+11	Dehradun
+12	Jaipur
+13	Lucknow
+14	Patna
